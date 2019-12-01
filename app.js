@@ -6,25 +6,29 @@ const Intern = require ('./lib/Intern.js');
 const Engineer = require ('./lib/Engineer.js');
 
 let role = '';
+let officeNumber = '';
+let school = '';
+let github = '';
+let roleAnswer = '';
 
 function promptUser() {
     return inquirer.prompt([
         {
             type: 'input',
             name: 'name',
-            message: 'What is your name?'
+            message: 'Name of Employee: '
         },{
             type: 'input',
             name: 'id',
-            message: 'What is your id?'
+            message: 'Employee id: '
         },{
             type: 'input',
             name: 'email',
-            message: 'What is your email?'
+            message: 'Employee email: '
         },{
             type: 'input',
             name: 'title',
-            message: 'What is your position in the company?'
+            message: "Employee's position in the company: "
         }
     ])
 
@@ -32,18 +36,16 @@ function promptUser() {
 
 function generateRoleQ(input) {
     if (input.title === 'manager') {
-        role = 'manager';
-        const manager = new Manager(input.name, input.id, input.email);
-        console.log(manager);
-        
+        role = 'manager';        
         return inquirer.prompt([
             {
                 type: 'input',
                 name: 'officeNumber',
                 message: 'What is your office number?'
             }
-        ]); 
+        ])
     }
+    
 
     if (input.title === 'intern') {
         role = 'intern';
@@ -75,15 +77,8 @@ function generateRoleQ(input) {
         console.log('preset role not selected');
     }
 
-    /*
-    const emp = new Employee(input.name, input.id, input.email, input.title)
-    console.log(emp)
-    */
 };
 
-function instantiate() {
-
-}
 
 function addEmp() {
     return inquirer.prompt([
@@ -103,21 +98,44 @@ function iterate(answer) {
         console.log("\nGoodbye!");
         process.exit(0);
     }
+
+    //add generateHTML() here
 };
 
 /*
 function generateHTML() {
 
+    //
+
 };
 
 */
 
+function instantiate(input, roleQ) {
+    roleAnswer = roleQ
+     if (input.title === 'manager') {
+        const manager = new Manager(input.name, input.id, input.email, roleAnswer);
+        console.log(manager)
+    };
+    if (input.title === 'intern') {
+        const intern = new Intern(input.name, input.id, input.email, roleAnswer);
+        console.log(intern)
+        intern.getSchool();
+    };
+    if (input.title === 'engineer') {
+        const engineer = new Engineer(input.name, input.id, input.email, roleAnswer);
+        //werks
+        console.log(engineer.getGithub())
+    };
+}
+
 async function awaitInfo() {
     try {
         const input = await promptUser();
-        await generateRoleQ(input);
+        const roleQ = await generateRoleQ(input);
+        instantiate(input, roleQ)
         const answer = await addEmp();
-        await iterate(answer);
+        iterate(answer);
         
 
     } catch(err) {

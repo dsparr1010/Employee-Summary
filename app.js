@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+const Employee = require ('./lib/employee.js');
+const Manager = require ('./lib/Manager.js');
+const Intern = require ('./lib/Intern.js');
+const Engineer = require ('./lib/Engineer.js');
 
-/*to prompt the user for their email, id, and specific information based 
-on their role with the company. For instance, an intern may provide their
- school, whereas an engineer may provide their GitHub username.
- */
+let role = '';
 
 function promptUser() {
     return inquirer.prompt([
@@ -14,31 +15,40 @@ function promptUser() {
             message: 'What is your name?'
         },{
             type: 'input',
-            name: 'title',
-            message: 'What is your position in the company?'
+            name: 'id',
+            message: 'What is your id?'
         },{
             type: 'input',
             name: 'email',
             message: 'What is your email?'
         },{
             type: 'input',
-            name: 'id',
-            message: 'What is your id?'
+            name: 'title',
+            message: 'What is your position in the company?'
         }
     ])
+
 };
 
 function generateRoleQ(input) {
     if (input.title === 'manager') {
+        role = 'manager';
+        const manager = new Manager(input.name, input.id, input.email);
+        console.log(manager);
+        
         return inquirer.prompt([
             {
                 type: 'input',
                 name: 'officeNumber',
                 message: 'What is your office number?'
             }
-        ])
+        ]); 
     }
+
     if (input.title === 'intern') {
+        role = 'intern';
+        const intern = new Intern(input.name, input.id, input.email);
+        console.log(intern);
         return inquirer.prompt([
             {
                 type: 'input',
@@ -46,8 +56,12 @@ function generateRoleQ(input) {
                 message: 'What is the name of your school?'
             }
         ])
-    }   
+    }  
+
     if (input.title === 'engineer') {
+        role = 'engineer';
+        const engineer = new Engineer(input.name, input.id, input.email);
+        console.log(engineer);
         return inquirer.prompt([
             {
                 type: 'input',
@@ -56,16 +70,56 @@ function generateRoleQ(input) {
             }
         ])
     }
-    else if (input.title === !"engineer"||"manager"||"intern") {
-        console.log('preset role not selected')
+
+    else {
+        console.log('preset role not selected');
     }
+
+    /*
+    const emp = new Employee(input.name, input.id, input.email, input.title)
+    console.log(emp)
+    */
+};
+
+function instantiate() {
+
 }
+
+function addEmp() {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'add',
+            message: 'Would you like to add an employee to the team?'
+        }
+        ])
+};
+
+function iterate(answer) {
+    if (answer.add === 'yes') {
+        awaitInfo();
+    }
+    else {
+        console.log("\nGoodbye!");
+        process.exit(0);
+    }
+};
+
+/*
+function generateHTML() {
+
+};
+
+*/
 
 async function awaitInfo() {
     try {
         const input = await promptUser();
-        generateRoleQ(input);
-  
+        await generateRoleQ(input);
+        const answer = await addEmp();
+        await iterate(answer);
+        
+
     } catch(err) {
       console.log(err);
     }

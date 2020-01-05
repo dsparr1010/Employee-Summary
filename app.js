@@ -1,14 +1,11 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const Employee = require ('./lib/employee.js');
 const Manager = require ('./lib/Manager.js');
 const Intern = require ('./lib/Intern.js');
 const Engineer = require ('./lib/Engineer.js');
+let content;
 
 let role = '';
-let officeNumber = '';
-let school = '';
-let github = '';
 let roleAnswer = '';
 
 function promptUser() {
@@ -41,7 +38,7 @@ function generateRoleQ(input) {
             {
                 type: 'input',
                 name: 'officeNumber',
-                message: 'What is your office number?'
+                message: "What is this manager's office number?"
             }
         ])
     }
@@ -49,26 +46,22 @@ function generateRoleQ(input) {
 
     if (input.title === 'intern') {
         role = 'intern';
-        const intern = new Intern(input.name, input.id, input.email);
-        console.log(intern);
         return inquirer.prompt([
             {
                 type: 'input',
                 name: 'school',
-                message: 'What is the name of your school?'
+                message: 'What is the name of the school this intern attends?'
             }
         ])
     }  
 
     if (input.title === 'engineer') {
         role = 'engineer';
-        const engineer = new Engineer(input.name, input.id, input.email);
-        console.log(engineer);
         return inquirer.prompt([
             {
                 type: 'input',
                 name: 'github',
-                message: 'What is your GitHub username?'
+                message: 'Enter the GitHub username for this engineer: '
             }
         ])
     }
@@ -83,15 +76,19 @@ function generateRoleQ(input) {
 function addEmp() {
     return inquirer.prompt([
         {
-            type: 'input',
+            type: 'list',
             name: 'add',
-            message: 'Would you like to add an employee to the team?'
+            message: 'Would you like to add another employee to the team?',
+            choices: [
+                'Yes',
+                'No'
+            ]
         }
         ])
 };
 
 function iterate(answer) {
-    if (answer.add === 'yes') {
+    if (answer.add === 'Yes') {
         awaitInfo();
     }
     else {
@@ -99,35 +96,101 @@ function iterate(answer) {
         process.exit(0);
     }
 
-    //add generateHTML() here
 };
 
-/*
-function generateHTML() {
-
-    //
-
-};
-
-*/
 
 function instantiate(input, roleQ) {
-    roleAnswer = roleQ
      if (input.title === 'manager') {
-        const manager = new Manager(input.name, input.id, input.email, roleAnswer);
-        console.log(manager)
+       // const manager = new Manager(input.name, input.id, input.email, officeNumber);
+        const officeNumber = roleQ.officeNumber;
+        const managerCard =
+        `<div class="col-4">
+                <div class="card bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header text-white">
+                        <h5 class="card-title">${input.name}</h5>
+                        <h5 class="card-subtitle">Manager</h5>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="bg-white m-3">
+                            <ul class="list-group">
+                                <li class="list-group-item">ID: ${input.id}</li>
+                                <li class="list-group-item">Email: ${input.email}</span></li>
+                                <li class="list-group-item">Office Number: ${officeNumber}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+  
+      try {
+        fs.appendFileSync("./output/main.html", `${managerCard}`);
+      }
+      catch {
+        console.error("Unable to write to manager file.");
+      };
     };
     if (input.title === 'intern') {
-        const intern = new Intern(input.name, input.id, input.email, roleAnswer);
-        console.log(intern)
-        intern.getSchool();
+        //const intern = new Intern(input.name, input.id, input.email, school);
+        const school = roleQ.school;
+        console.log(school);
+        const internCard =
+        `<div class="col-4">
+                <div class="card bg-primary mb-3" style="max-width: 18rem;">
+                    <div class="card-header text-white">
+                        <h5 class="card-title">${input.name}</h5>
+                        <h5 class="card-subtitle">Intern</h5>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="bg-white m-3">
+                            <ul class="list-group">
+                                <li class="list-group-item">ID: ${input.id}</li>
+                                <li class="list-group-item">Email: ${input.email}</span></li>
+                                <li class="list-group-item">School: ${school}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+  
+      try {
+        fs.appendFileSync("./output/main.html", `${internCard}`);
+      }
+      catch {
+        console.error("Unable to write to intern file.");
+      }
     };
+
     if (input.title === 'engineer') {
-        const engineer = new Engineer(input.name, input.id, input.email, roleAnswer);
-        //werks
-        console.log(engineer.getGithub())
-    };
-}
+        //const engineer = new Engineer(input.name, input.id, input.email, github);
+        const git = roleQ.github;
+        console.log(git);
+        const engineerCard =
+      `<div class="col-4">
+              <div class="card bg-primary mb-3" style="max-width: 18rem;">
+                  <div class="card-header text-white">
+                      <h5 class="card-title">${input.name}</h5>
+                      <h5 class="card-subtitle">Engineer</h5>
+                  </div>
+                  <div class="card-body bg-light">
+                      <div class="bg-white m-3">
+                          <ul class="list-group">
+                              <li class="list-group-item">ID: ${input.id}</li>
+                              <li class="list-group-item">Email: ${input.email}</span></li>
+                              <li class="list-group-item">Github: ${git}</li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+
+    try {
+      fs.appendFileSync("./output/main.html", `${engineerCard}`);
+    }
+    catch {
+      console.error("Unable to write to engineer file.");
+    }
+};
+};
 
 async function awaitInfo() {
     try {
@@ -143,5 +206,23 @@ async function awaitInfo() {
     }
   };
 
-  
-  awaitInfo();  
+
+  function resetHtml(){
+      fs.readFile('./templates/main.html', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        content = data;
+       processFile();       
+    }); 
+    }
+    function processFile() {
+        fs.writeFile("./output/main.html", content, function (err) {
+          if (err) {
+            throw err;
+          }
+        });
+      }
+      
+resetHtml();
+awaitInfo();  

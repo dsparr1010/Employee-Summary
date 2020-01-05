@@ -132,7 +132,6 @@ function instantiate(input, roleQ) {
     if (input.title === 'intern') {
         //const intern = new Intern(input.name, input.id, input.email, school);
         const school = roleQ.school;
-        console.log(school);
         const internCard =
         `<div class="col-4">
                 <div class="card bg-primary mb-3" style="max-width: 18rem;">
@@ -163,7 +162,6 @@ function instantiate(input, roleQ) {
     if (input.title === 'engineer') {
         //const engineer = new Engineer(input.name, input.id, input.email, github);
         const git = roleQ.github;
-        console.log(git);
         const engineerCard =
       `<div class="col-4">
               <div class="card bg-primary mb-3" style="max-width: 18rem;">
